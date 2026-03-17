@@ -8,7 +8,7 @@ Works with **Claude Code**, **GPT CLI**, **Gemini CLI**, **Qwen CLI**, **Codex C
 
 ```bash
 # Install the CLI
-npm install -g ai-skills
+npm install -g @sirbenj/ai-skills
 
 # Install all skills globally (default: Claude Code)
 ai-skills install
@@ -16,6 +16,11 @@ ai-skills install
 # Install for a different agent
 ai-skills install --agent=gpt
 ai-skills install --agent=gemini
+```
+
+You can also install directly from GitHub:
+```bash
+npm install -g kupzsensei/ai-skills
 ```
 
 ## Bundled Skills
