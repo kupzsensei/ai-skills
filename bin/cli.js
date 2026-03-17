@@ -41,12 +41,12 @@ const agentList = Object.entries(AGENTS)
   .join(", ");
 
 const HELP = `
-claude-skills — Install AI coding skills for any terminal agent
+ai-skills — Install AI coding skills for any terminal agent
 
 Usage:
-  claude-skills install [skill-name] [--project] [--force] [--agent=<agent>]
-  claude-skills uninstall <skill-name> [--project] [--force] [--agent=<agent>]
-  claude-skills list [--project] [--agent=<agent>]
+  ai-skills install [skill-name] [--project] [--force] [--agent=<agent>]
+  ai-skills uninstall <skill-name> [--project] [--force] [--agent=<agent>]
+  ai-skills list [--project] [--agent=<agent>]
 
 Options:
   --project        Install/check in project-level directory instead of global
@@ -60,10 +60,10 @@ Commands:
   list        Show available skills and their install status
 
 Examples:
-  claude-skills install                              # Install all skills globally for Claude
-  claude-skills install --agent=gpt                  # Install all skills globally for GPT CLI
-  claude-skills install fullstack-engineer-skill --project --agent=gemini
-  claude-skills list --agent=codex
+  ai-skills install                              # Install all skills globally for Claude
+  ai-skills install --agent=gpt                  # Install all skills globally for GPT CLI
+  ai-skills install fullstack-engineer-skill --project --agent=gemini
+  ai-skills list --agent=codex
 `;
 
 async function main() {
