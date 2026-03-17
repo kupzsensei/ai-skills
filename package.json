@@ -1,0 +1,25 @@
+{
+  "name": "ai-skills",
+  "version": "1.0.0",
+  "description": "CLI installer for AI coding skills — install skills for Claude, GPT, Gemini, Qwen, Codex and other terminal agents",
+  "bin": {
+    "claude-skills": "./bin/cli.js"
+  },
+  "files": [
+    "bin/",
+    "lib/",
+    "skills/"
+  ],
+  "engines": {
+    "node": ">=16"
+  },
+  "keywords": [
+    "claude",
+    "claude-code",
+    "skills",
+    "ai",
+    "cli"
+  ],
+  "author": "sirbenj",
+  "license": "MIT"
+}
