@@ -1,21 +1,21 @@
 ---
 name: project-memory
 description: >
-  A project memory and indexing skill that makes Claude remember everything across sessions. Use this skill at the START of every conversation and at the END of every conversation. Triggers automatically whenever Claude opens a project, starts a new session, finishes a task, makes architectural decisions, encounters bugs, or when the user says "remember this", "save progress", "what did we do last time", "continue where we left off", "index this project", "map the codebase", or "update memory". This skill ensures zero context loss between sessions — Claude always knows what happened before, what the project looks like, what decisions were made, and what's next.
+  A project memory and indexing skill that works across all AI agents (Claude, Gemini, Qwen, Codex). Use this skill at the START of every conversation and at the END of every conversation. Triggers automatically whenever an agent opens a project, starts a new session, finishes a task, makes architectural decisions, encounters bugs, or when the user says "remember this", "save progress", "what did we do last time", "continue where we left off", "index this project", "map the codebase", or "update memory". This skill ensures zero context loss between sessions and across agents — switch from Claude to Gemini to Qwen mid-project and never lose context.
 ---
 
 # Project Memory Skill
 
-You have persistent memory across sessions. At the start of every conversation, you load it. At the end of every conversation (or at key milestones), you save it. You never lose context, you never ask "what does this project do?" twice, and you never repeat work.
+You have persistent memory across sessions and across AI agents. At the start of every conversation, you load it. At the end of every conversation (or at key milestones), you save it. You never lose context, you never ask "what does this project do?" twice, and you never repeat work.
 
-The memory lives in a `.claude/memory/` directory inside the project. It's just markdown and JSON files — human-readable, version-controllable, and portable.
+The memory lives in a `.ai/memory/` directory inside the project — shared across all agents (Claude, Gemini, Qwen, Codex). It's just markdown and JSON files — human-readable, version-controllable, and portable. Switching agents mid-project preserves full context.
 
 ---
 
 ## Memory Architecture
 
 ```
-.claude/
+.ai/
 └── memory/
     ├── index.md              # Project map: file tree, tech stack, architecture
     ├── decisions.md          # Every architectural/technical decision and WHY
@@ -34,12 +34,12 @@ Every time a conversation begins in a project directory, run this sequence befor
 ### Step 1: Check for existing memory
 
 ```bash
-if [ -d ".claude/memory" ]; then
+if [ -d ".ai/memory" ]; then
     echo "Memory found — loading context..."
-    cat .claude/memory/index.md
-    cat .claude/memory/sessions.md | tail -100
-    cat .claude/memory/todo.md
-    cat .claude/memory/decisions.md | tail -50
+    cat .ai/memory/index.md
+    cat .ai/memory/sessions.md | tail -100
+    cat .ai/memory/todo.md
+    cat .ai/memory/decisions.md | tail -50
 else
     echo "No memory found — running first-time indexing..."
 fi
@@ -67,12 +67,12 @@ This is the deep scan that creates the initial project map. See the "First-Time 
 
 ## First-Time Indexing
 
-When entering a project for the first time (no `.claude/memory/` directory), perform a comprehensive scan.
+When entering a project for the first time (no `.ai/memory/` directory), perform a comprehensive scan.
 
 ### Step 1: Create memory directory
 
 ```bash
-mkdir -p .claude/memory
+mkdir -p .ai/memory
 ```
 
 ### Step 2: Map the project structure
@@ -278,7 +278,7 @@ After indexing, give the user a concise summary:
 > - **Scale**: [X files, ~Y lines of code]
 > - **Structure**: [brief architecture description]
 >
-> Memory saved to `.claude/memory/`. I'll remember this across sessions.
+> Memory saved to `.ai/memory/`. I'll remember this across sessions.
 > What are we working on?"
 
 ---
@@ -422,11 +422,11 @@ All bash commands in this skill use Unix syntax. On Windows with Claude Code, th
 
 ### .gitignore Guidance
 
-Suggest to the user that they add `.claude/memory/` to `.gitignore` if:
+Suggest to the user that they add `.ai/memory/` to `.gitignore` if:
 - The project is open source (memory contains internal context)
 - Multiple developers work on the project (memory is personal context)
 
-Suggest they commit `.claude/memory/` if:
+Suggest they commit `.ai/memory/` if:
 - It's a solo project and they want memory in version control
 - The team agrees to share project context
 

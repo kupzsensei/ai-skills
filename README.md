@@ -28,7 +28,7 @@ npm install -g kupzsensei/ai-skills
 | Skill | Description |
 |-------|-------------|
 | **fullstack-engineer-skill** | A full engineering team in one agent — architect, frontend, backend, DevOps, QA, DBA, security, and tech lead. Handles building, debugging, refactoring, deploying, and maintaining any software project. Includes reference guides for API design, databases, DevOps, security, testing, and tech stack selection. |
-| **project-memory-skill** | Persistent memory across sessions. Your AI agent remembers what happened before, what decisions were made, and what's next. Zero context loss between conversations. |
+| **project-memory-skill** | Persistent memory across sessions **and across agents**. Start in Claude, continue in Gemini, pick up in Qwen — zero context loss. Memory is stored in a shared `.ai/memory/` directory that all agents read and write. |
 | **skill-factory** | A meta-skill that creates new skills, detects when existing skills are outdated, and expands skills with new capabilities. Keeps your AI agent's knowledge current and production-ready. |
 
 ## Usage
@@ -109,6 +109,76 @@ ai-skills list --agent=codex
 ```
 ./your-project/.claude/skills/fullstack-engineer-skill/SKILL.md
 ```
+
+## What Happens During Install
+
+The installer does three things:
+
+1. **Copies skill files** to the agent's skill directory
+2. **Injects auto-activation** into the agent's instruction file (e.g., `CLAUDE.md`) — skills that include an `AUTORUN.md` get their activation instructions added automatically, so they trigger without manual `/slash-command` invocation
+3. **Offers recommended settings** — permission rules that let skills work without constant approval prompts
+
+### Auto-Activation
+
+Skills with an `AUTORUN.md` file automatically inject instructions into the agent's instruction file:
+
+| Agent | Global Instruction File | Project Instruction File | Supported |
+|-------|------------------------|--------------------------|-----------|
+| `claude` | `~/.claude/CLAUDE.md` | `./CLAUDE.md` | Yes |
+| `gemini` | `~/.gemini/GEMINI.md` | `./GEMINI.md` | Yes |
+| `qwen` | `~/.qwen/QWEN.md` | `./QWEN.md` | Yes |
+| `codex` | `~/.codex/AGENTS.md` | `./AGENTS.md` | Yes |
+| `gpt` | — | — | No (no instruction file support) |
+
+These sections are wrapped in HTML comment markers (`<!-- ai-skills:skill-name:start/end -->`) and are cleanly removed on uninstall.
+
+### Shared Memory Across Agents
+
+The `project-memory-skill` stores all memory in `.ai/memory/` — an agent-agnostic directory shared by all agents. This means you can:
+
+- Start a project in **Claude Code**, build the foundation
+- Run out of context, switch to **Gemini CLI** — it loads the same memory and picks up where Claude left off
+- Switch to **Qwen CLI** later — same memory, zero context loss
+
+```
+your-project/
+└── .ai/
+    └── memory/
+        ├── index.md          # Project map (shared)
+        ├── sessions.md       # Session log from ALL agents
+        ├── todo.md           # Task tracker (shared)
+        ├── decisions.md      # Technical decisions (shared)
+        ├── bugs.md           # Bug tracker (shared)
+        └── file-index.json   # File index (shared)
+```
+
+### Recommended Settings (Claude Code)
+
+After installing, the CLI will prompt you to apply recommended permission rules to `settings.json`. These let skills read/write memory files and scan your project without asking for approval on every action:
+
+```json
+{
+  "permissions": {
+    "allow": [
+      "Read(.ai/memory/**)",
+      "Edit(.ai/memory/**)",
+      "Write(.ai/memory/**)",
+      "Bash(cat .ai/memory/*)",
+      "Bash(ls .ai/memory/*)",
+      "Bash(mkdir -p .ai/memory)",
+      "Bash(find . -type f *)",
+      "Bash(wc -l *)",
+      "Bash(head *)",
+      "Bash(grep -rn *)",
+      "Skill(project-memory-skill)",
+      "Skill(fullstack-engineer-skill)",
+      "Skill(skill-factory)"
+    ]
+  }
+}
+```
+
+Use `--force` to apply settings automatically, or decline the prompt to configure manually.
 
 ## Requirements
 
